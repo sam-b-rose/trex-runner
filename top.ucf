@@ -1,0 +1,51 @@
+NET "hsync" LOC = J14;
+NET "hsync" DRIVE = 2;
+NET "hsync" PULLUP;
+NET "vsync" LOC = K13;
+NET "vsync" DRIVE = 2;
+NET "vsync" PULLUP;
+
+NET "Red[2]" LOC = F13;
+NET "Red[2]" DRIVE = 2;
+NET "Red[2]" PULLUP;
+NET "Red[1]" LOC = D13;
+NET "Red[1]" DRIVE = 2;
+NET "Red[1]" PULLUP;
+NET "Red[0]" LOC = C14;
+NET "Red[0]" DRIVE = 2;
+NET "Red[0]" PULLUP;
+
+NET "Green[2]" LOC = G14;
+NET "Green[2]" DRIVE = 2;
+NET "Green[2]" PULLUP;
+NET "Green[1]" LOC = G13;
+NET "Green[1]" DRIVE = 2;
+NET "Green[1]" PULLUP;
+NET "Green[0]" LOC = F14;
+NET "Green[0]" DRIVE = 2;
+NET "Green[0]" PULLUP;
+
+NET "Blue[2]" LOC = J13;
+NET "Blue[2]" DRIVE = 2;
+NET "Blue[2]" PULLUP;
+NET "Blue[1]" LOC = H13;
+NET "Blue[1]" DRIVE = 2;
+NET "Blue[1]" PULLUP;
+
+NET "led[7]" LOC = G1;
+NET "led[6]" LOC = P4;
+NET "led[5]" LOC = N4;
+NET "led[4]" LOC = N5;
+NET "led[3]" LOC = P6;
+NET "led[2]" LOC = P7;
+NET "led[1]" LOC = M11;
+NET "led[0]" LOC = M5;
+NET "clk" LOC = B8;
+NET "reset" LOC = P11;
+
+# PlanAhead Generated physical constraints 
+
+NET "down" LOC = C11;
+NET "up" LOC = G12;
+NET "right" LOC = M4;
+NET "left" LOC = A7;

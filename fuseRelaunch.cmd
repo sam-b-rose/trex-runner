@@ -1,0 +1,1 @@
+-intstyle "ise" -incremental -o "Y:/Documents/ISE/runner/vga/vga_test_isim_beh.exe" -prj "Y:/Documents/ISE/runner/vga/vga_test_beh.prj" "work.vga_test" 
