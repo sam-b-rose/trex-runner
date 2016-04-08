@@ -46,6 +46,7 @@ architecture Behavioral of top is
 	signal isJumping : std_logic := '0';
 	signal gameOver : std_logic := '1';
 	
+	-- TODO: Randomize these values
 	signal cactusX_1: integer := COLS - 24*1;
 	signal cactusX_2: integer := COLS - 24*2;
 	signal cactusX_3: integer := COLS - 24*3;
@@ -56,7 +57,6 @@ architecture Behavioral of top is
 begin							
 	
 	vgasignal: process(clk)
-		variable tileColor : std_logic := '0';
 		variable divide_by_2 : std_logic := '0';
 		variable rgbDrawColor : std_logic_vector(7 downto 0) := (others => '0');
 	begin
@@ -174,6 +174,7 @@ begin
 			end if;
 		end if;
 	end process;
+	
 	
 	controlJump: process(clk, jump)
 		variable prescalerCount: integer := 0;

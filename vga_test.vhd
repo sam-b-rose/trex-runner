@@ -18,7 +18,6 @@ ARCHITECTURE behavior OF vga_test IS
     PORT(
          clk : IN  std_logic;
          reset : IN  std_logic;
-         led : OUT  std_logic_vector(7 downto 0);
 			
 			jump: in std_logic; -- BTN0
 			
@@ -38,8 +37,6 @@ ARCHITECTURE behavior OF vga_test IS
 	signal jump: std_logic := '0';
 
  	--Outputs
-   signal led : std_logic_vector(7 downto 0);
-	
 	signal hsync : std_logic;
 	signal vsync : std_logic;
 	
@@ -56,7 +53,6 @@ BEGIN
    uut: top PORT MAP (
           clk => clk,
           reset => reset,
-          led => led,
 			 hsync => hsync,
 			 vsync => vsync,
 			 jump => jump,
