@@ -16,12 +16,7 @@ entity top is
 		clk: in std_logic;
 		reset: in std_logic; -- SW0
 		
-		up: in std_logic; -- BTN0
-		down: in std_logic; -- BTN1
-		right: in std_logic; -- BTN2
-		left: in std_logic; -- BTN3
-		
-		led: out std_logic_vector(7 downto 0);
+		jump: in std_logic; -- BTN0
 		
 		hsync: out std_logic;
 		vsync: out std_logic;
@@ -45,15 +40,20 @@ architecture Behavioral of top is
 	signal nextHCount: integer := 641;
 	signal nextVCount: integer := 480;
 	
-	signal redX: integer := 0;
-	signal redY: integer := 0;
+	signal trexX: integer := 8;
+	signal trexY: integer := 24;
+	
+	signal isJumping : std_logic := '0';
+	signal gameOver : std_logic := '1';
+	
+	signal cactusX_1: integer := COLS - 24*1;
+	signal cactusX_2: integer := COLS - 24*2;
+	signal cactusX_3: integer := COLS - 24*3;
+	signal cactusY: integer := 24;
 	
 	signal hasMoved: std_logic := '0';
-
-	signal led_reg: std_logic_vector(7 downto 0) := (others => '0');
 	
 begin							
-	led <= led_reg;
 	
 	vgasignal: process(clk)
 		variable tileColor : std_logic := '0';
@@ -126,38 +126,35 @@ begin
 					if (hCount < 640 and vCount < 480) then
 					
 						-- Draw stack:
-						-- Default is black
-						rgbDrawColor := "000" & "000" & "00";
-						
-						-- Make the Checker Board
-						if (vCount / PIX) mod 2 = 0 then
-							-- Blue (Even)
-							tileColor := '1';
-						else
-							-- Green (Odd)
-							tileColor := '0';
-						end if;
-					
-						if (hCount / PIX) mod 2 = 0 then
-								tileColor := not tileColor;
-						end if;
-						
-						-- Assign Tile Color
-						if tileColor = '0' then
-							-- Green Tile
-							rgbDrawColor := "110" & "111" & "11";
-						else
-							-- Blue Tile
-							rgbDrawColor := "101" & "111" & "11";
-						end if;	
+						-- Default is background
+						rgbDrawColor := "110" & "111" & "11";
+	
 
 						-- Ground
-						if ((vCount / PIX) = 25) then 
-							rgbDrawColor := "000" & "000" & "00";
+						if ((vCount / PIX) = 24) then
+							if ((vCount mod PIX) > (PIX - 4)) and ((vCount mod PIX) < (PIX - 2)) then
+								rgbDrawColor := "000" & "000" & "00";
+							end if;
+						end if;
+			
+						
+						-- Cactus1
+						if ((hCount / PIX) = cactusX_1) and ((vCount / PIX) = cactusY) then 
+							rgbDrawColor := "011" & "011" & "11";
+						end if;
+						
+						-- Cactus2
+						if ((hCount / PIX) = cactusX_2) and ((vCount / PIX) = cactusY) then 
+							rgbDrawColor := "011" & "011" & "11";
+						end if;
+						
+						-- Cactus3
+						if ((hCount / PIX) = cactusX_3) and ((vCount / PIX) = cactusY) then 
+							rgbDrawColor := "011" & "011" & "11";
 						end if;
 						
 						-- T-Rex
-						if ((hCount / PIX) = 8) and ((vCount / PIX) = 24) then 
+						if ((hCount / PIX) = trexX) and ((vCount / PIX) = trexY) then 
 							rgbDrawColor := "001" & "001" & "01";
 						end if;
 						
@@ -178,71 +175,98 @@ begin
 		end if;
 	end process;
 	
-	controlButtons: process(clk, up, down, right, left)
+	controlJump: process(clk, jump)
+		variable prescalerCount: integer := 0;
+		variable prescaler: integer := 2500000;
+		
+		variable waitCount: integer := 0;
+		variable waitTime: integer := 50000000;
 	begin
 		if clk'event and clk = '1' then
-			if hasMoved = '0' then
-				if (up = '1') then
-					if redY /= 0 then
-						redY <= redY - 1;
-					else
-						redY <= 15;
-					end if;
+			if hasMoved = '0' and trexY = 24 then
+				if (jump = '1') then
+					isJumping <= '1';
 					hasMoved <= '1';
-				elsif (down = '1') then
-					if redY /= 15 then
-						redY <= redY + 1;
-					else
-						redY <= 0;
-					end if;
-					hasMoved <= '1';
-				elsif (right = '1') then
-					if redX /= 20 then
-						redX <= redX + 1;
-					else
-						redX <= 0;
-					end if;
-					hasMoved <= '1';
-				elsif(left = '1') then
-					if redX /= 0 then
-						redX <= redX - 1;
-					else
-						redX <= 20;
-					end if;
-					hasMoved <= '1';
+					prescalerCount := 0;
 				else
 					hasMoved <= '0';
 				end if;
-			elsif (up = '0' and down = '0' and right = '0' and left = '0') then 
+			elsif (jump = '0') then
 				hasMoved <= '0';
 			end if;
+			
+			
+			if prescalerCount >= prescaler then
+				if isJumping = '1' then
+					if (trexY > 20) then
+						trexY <= trexY - 1;
+					else
+						isJumping <= '0';
+					end if;
+					prescalerCount := 0;
+				else
+					if (trexY < 24) then
+						trexY <= trexY + 1;
+					end if;
+					prescalerCount := 0;
+				end if;
+			end if;
+			
+			
+			-- Detect Hit
+			if (trexY = cactusY) and ((trexX = cactusX_1) or (trexX = cactusX_2) or (trexX = cactusX_2)) then
+				gameOver <= '1';
+			end if;
+			
+			if gameOver = '1' then
+				if waitCount >= waitTime then
+					trexX <= 8;
+					trexY <= 24;
+					
+					gameOver <= '0';
+					waitCount := 0;
+				end if;
+				waitCount := waitCount + 1;
+			end if;
+		
+			prescalerCount := prescalerCount + 1;
 		end if;
 	end process;
-	
-	-- Run the leds
-	-- If in reset, leds are off
-	runLeds: process(clk)
+		
+		
+	controlCactus: process(clk, gameOver)
 		variable prescalerCount: integer := 0;
-		variable prescaler: integer := 50000000;
+		variable prescaler: integer := 2500000;
 	begin
-		if clk'event and clk = '1' then
-			if reset = '1' then
-				prescalerCount := 0;
+		if gameOver = '1' then
+			cactusX_1 <= COLS - 24*1;
+			cactusX_2 <= COLS - 24*2;
+			cactusX_3 <= COLS - 24*3;
 			
-				led_reg <= (others => '0');
-			else
-				if prescalerCount >= prescaler then
-					if led_reg = "00000000" then
-						led_reg <= "00000001";
+		elsif clk'event and clk = '1' then
+			if prescalerCount >= prescaler then
+					if (cactusX_1 <= 0) then
+						cactusX_1 <= COLS;
 					else
-						led_reg <= led_reg(6 downto 0) & "0";
+						cactusX_1 <= cactusX_1 - 1;
 					end if;
 					
+					if (cactusX_2 <= 0) then
+						cactusX_2 <= COLS;
+					else
+						cactusX_2 <= cactusX_2 - 1;
+					end if;
+					
+					if (cactusX_3 <= 0) then
+						cactusX_3 <= COLS;
+					else
+						cactusX_3 <= cactusX_3 - 1;
+					end if;
+			
 					prescalerCount := 0;
 				end if;
 				
 				prescalerCount := prescalerCount + 1;
-			end if;
 		end if;
 	end process;
 

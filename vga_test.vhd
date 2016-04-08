@@ -20,10 +20,7 @@ ARCHITECTURE behavior OF vga_test IS
          reset : IN  std_logic;
          led : OUT  std_logic_vector(7 downto 0);
 			
-			up: in std_logic; -- BTN0
-			down: in std_logic; -- BTN1
-			right: in std_logic; -- BTN2
-			left: in std_logic; -- BTN3
+			jump: in std_logic; -- BTN0
 			
 			hsync: out std_logic;
 			vsync: out std_logic;
@@ -38,10 +35,7 @@ ARCHITECTURE behavior OF vga_test IS
    signal clk : std_logic := '0';
    signal reset : std_logic := '0';
 	
-	signal up: std_logic := '0';
-	signal down: std_logic := '0'; 
-	signal right: std_logic := '0';
-	signal left: std_logic := '0';
+	signal jump: std_logic := '0';
 
  	--Outputs
    signal led : std_logic_vector(7 downto 0);
@@ -65,10 +59,7 @@ BEGIN
           led => led,
 			 hsync => hsync,
 			 vsync => vsync,
-			 up => up,
-			 down => down,
-			 right => right,
-			 left => left,
+			 jump => jump,
 			 Red => Red,
 			 Green => Green,
 			 Blue => Blue

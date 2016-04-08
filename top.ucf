@@ -32,20 +32,9 @@ NET "Blue[1]" LOC = H13;
 NET "Blue[1]" DRIVE = 2;
 NET "Blue[1]" PULLUP;
 
-NET "led[7]" LOC = G1;
-NET "led[6]" LOC = P4;
-NET "led[5]" LOC = N4;
-NET "led[4]" LOC = N5;
-NET "led[3]" LOC = P6;
-NET "led[2]" LOC = P7;
-NET "led[1]" LOC = M11;
-NET "led[0]" LOC = M5;
 NET "clk" LOC = B8;
 NET "reset" LOC = P11;
 
 # PlanAhead Generated physical constraints 
 
-NET "down" LOC = C11;
-NET "up" LOC = G12;
-NET "right" LOC = M4;
-NET "left" LOC = A7;
+NET "jump" LOC = G12;
