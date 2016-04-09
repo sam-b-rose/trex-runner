@@ -1,6 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 USE ieee.STD_LOGIC_UNSIGNED.all;
+use ieee.numeric_std.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -53,10 +54,70 @@ architecture Behavioral of top is
 	signal cactusY: integer := 24;
 	
 	signal hasMoved: std_logic := '0';
-	
+
+	-- Sprite
+	type sprite_block is array(0 to 15, 0 to 15) of integer range 0 to 1;
+	constant trex_1: sprite_block:=((0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0), -- 0 
+									(0,0,0,0,0,0,0,0,1,0,1,1,1,1,1,0), -- 1 
+									(0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0), -- 2
+									(0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0), -- 3
+									(0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0), -- 4
+									(0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0), -- 5
+									(0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0), -- 6
+									(1,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0), -- 7
+									(1,1,0,0,1,1,1,1,1,1,1,0,0,0,0,0), -- 8
+									(1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0), -- 9
+									(0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0), -- 10
+									(0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0), -- 11
+									(0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0), -- 12
+		 							(0,0,0,0,0,1,0,0,1,1,0,0,0,0,0,0), -- 13
+									(0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0), -- 14
+									(0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0));  -- 15
+
+	constant trex_2: sprite_block:=((0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0), -- 0 
+									(0,0,0,0,0,0,0,0,1,0,1,1,1,1,1,0), -- 1 
+									(0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0), -- 2
+									(0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0), -- 3
+									(0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0), -- 4
+									(0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0), -- 5
+									(0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0), -- 6
+									(1,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0), -- 7
+									(1,1,0,0,1,1,1,1,1,1,1,0,0,0,0,0), -- 8
+									(1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0), -- 9
+									(0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0), -- 10
+									(0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0), -- 11
+									(0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0), -- 12
+		 							(0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0), -- 13
+									(0,0,0,0,0,1,1,0,1,0,0,0,0,0,0,0), -- 14
+									(0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0));-- 15
+
+	constant cactus: sprite_block :=((0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0), -- 0 
+									 (0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0), -- 1 
+									 (0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0), -- 2
+									 (0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0), -- 3
+									 (0,0,0,0,0,1,0,1,1,1,0,1,0,0,0,0), -- 4
+									 (0,0,0,0,1,1,0,1,1,1,0,1,0,0,0,0), -- 5
+									 (0,0,0,0,1,1,0,1,1,1,0,1,0,0,0,0), -- 6
+									 (0,0,0,0,1,1,0,1,1,1,0,1,0,0,0,0), -- 7
+									 (0,0,0,0,1,1,0,1,1,1,0,1,0,0,0,0), -- 8
+									 (0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0), -- 9
+									 (0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0), -- 10
+									 (0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0), -- 10
+									 (0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0), -- 12
+		 							 (0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0), -- 13
+									 (0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0), -- 14
+									 (0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0));-- 15
+
+	type color_arr is array(0 to 1) of std_logic_vector(7 downto 0);
+	constant sprite_color : color_arr := ("11011111", "00000000");
+
 begin							
 	
 	vgasignal: process(clk)
+		variable sprite_x : integer := 0;
+		variable sprite_y : integer := 0;
+		variable prescalerCount: integer := 0;
+		variable prescaler: integer := 5000000;
 		variable divide_by_2 : std_logic := '0';
 		variable rgbDrawColor : std_logic_vector(7 downto 0) := (others => '0');
 	begin
@@ -128,34 +189,42 @@ begin
 						-- Draw stack:
 						-- Default is background
 						rgbDrawColor := "110" & "111" & "11";
-	
-
+			
+						sprite_x := hCount mod PIX;
+						sprite_y := vCount mod PIX;
+						
+						-- Cactus1
+						if ((hCount / PIX) = cactusX_1) and ((vCount / PIX) = cactusY) then 
+							rgbDrawColor := sprite_color(cactus(sprite_y, sprite_x));
+						end if;
+						
+						-- Cactus2
+						if ((hCount / PIX) = cactusX_2) and ((vCount / PIX) = cactusY) then 
+							rgbDrawColor := sprite_color(cactus(sprite_y, sprite_x));
+						end if;
+						
+						-- Cactus3
+						if ((hCount / PIX) = cactusX_3) and ((vCount / PIX) = cactusY) then 
+							rgbDrawColor := sprite_color(cactus(sprite_y, sprite_x));
+						end if;
+						
+						-- T-Rex
+						if ((hCount / PIX) = trexX) and ((vCount / PIX) = trexY) then 					
+							if (prescalerCount <= prescaler) then
+								rgbDrawColor := sprite_color(trex_1(sprite_y, sprite_x));
+							elsif (prescalerCount > prescaler and prescalerCount <= prescaler*2) then
+								rgbDrawColor := sprite_color(trex_2(sprite_y, sprite_x));
+							else
+								prescalerCount := 0;
+								rgbDrawColor := sprite_color(trex_2(sprite_y, sprite_x));
+							end if;
+						end if;
+						
 						-- Ground
 						if ((vCount / PIX) = 24) then
 							if ((vCount mod PIX) > (PIX - 4)) and ((vCount mod PIX) < (PIX - 2)) then
 								rgbDrawColor := "000" & "000" & "00";
 							end if;
-						end if;
-			
-						
-						-- Cactus1
-						if ((hCount / PIX) = cactusX_1) and ((vCount / PIX) = cactusY) then 
-							rgbDrawColor := "011" & "011" & "11";
-						end if;
-						
-						-- Cactus2
-						if ((hCount / PIX) = cactusX_2) and ((vCount / PIX) = cactusY) then 
-							rgbDrawColor := "011" & "011" & "11";
-						end if;
-						
-						-- Cactus3
-						if ((hCount / PIX) = cactusX_3) and ((vCount / PIX) = cactusY) then 
-							rgbDrawColor := "011" & "011" & "11";
-						end if;
-						
-						-- T-Rex
-						if ((hCount / PIX) = trexX) and ((vCount / PIX) = trexY) then 
-							rgbDrawColor := "001" & "001" & "01";
 						end if;
 						
 						-- Show your colors
@@ -171,6 +240,7 @@ begin
 			
 				end if;
 				divide_by_2 := not divide_by_2;
+				prescalerCount := prescalerCount + 1;
 			end if;
 		end if;
 	end process;
