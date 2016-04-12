@@ -35,6 +35,18 @@ NET "Blue[1]" PULLUP;
 NET "clk" LOC = B8;
 NET "reset" LOC = P11;
 
-# PlanAhead Generated physical constraints 
-
 NET "jump" LOC = G12;
+
+NET "anodes[2]" LOC = J12;
+NET "anodes[3]" LOC = F12;
+NET "anodes[1]" LOC = M13;
+NET "anodes[0]" LOC = K14;
+
+NET "segments[7]" LOC = L14;
+NET "segments[6]" LOC = H12;
+NET "segments[5]" LOC = N14;
+NET "segments[4]" LOC = N11;
+NET "segments[3]" LOC = P12;
+NET "segments[2]" LOC = L13;
+NET "segments[1]" LOC = M12;
+NET "segments[0]" LOC = N13;

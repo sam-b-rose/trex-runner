@@ -7,7 +7,7 @@ ENTITY CDiv IS
 END CDiv ;
 
 ARCHITECTURE Behavior OF CDiv IS
-	constant TC: integer := 30; --Time Constant
+	constant TC: integer := 12; --Time Constant
 	signal c0,c1,c2,c3: integer range 0 to 1000;
 	signal D: std_logic := '0';
 BEGIN
