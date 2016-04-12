@@ -45,12 +45,13 @@ architecture Behavioral of top is
 	signal trexY: integer := 24;
 	
 	signal isJumping : std_logic := '0';
-	signal gameOver : std_logic := '1';
+	signal gameOver : std_logic := '0';
 	
 	-- TODO: Randomize these values
-	signal cactusX_1: integer := COLS - 24*1;
-	signal cactusX_2: integer := COLS - 24*2;
-	signal cactusX_3: integer := COLS - 24*3;
+	--signal resetCactus : std_logic := '0';
+	signal cactusX_1: integer := COLS + 24*2;
+	signal cactusX_2: integer := COLS + 24*3;
+	signal cactusX_3: integer := COLS + 24*4;
 	signal cactusY: integer := 24;
 	
 	signal hasMoved: std_logic := '0';
@@ -58,31 +59,31 @@ architecture Behavioral of top is
 	-- Sprite
 	type sprite_block is array(0 to 15, 0 to 15) of integer range 0 to 1;
 	constant trex_1: sprite_block:=((0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0), -- 0 
-									(0,0,0,0,0,0,0,0,1,0,1,1,1,1,1,0), -- 1 
-									(0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0), -- 2
-									(0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0), -- 3
-									(0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0), -- 4
-									(0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0), -- 5
+									(0,0,0,0,0,0,0,1,1,0,1,1,1,1,1,1), -- 1 
+									(0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1), -- 2
+									(0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1), -- 3
+									(0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0), -- 4
+									(0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0), -- 5
 									(0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0), -- 6
-									(1,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0), -- 7
-									(1,1,0,0,1,1,1,1,1,1,1,0,0,0,0,0), -- 8
+									(1,0,0,0,0,1,1,1,1,1,1,1,1,1,0,0), -- 7
+									(1,1,0,0,1,1,1,1,1,1,1,0,0,1,0,0), -- 8
 									(1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0), -- 9
 									(0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0), -- 10
 									(0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0), -- 11
 									(0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0), -- 12
 		 							(0,0,0,0,0,1,0,0,1,1,0,0,0,0,0,0), -- 13
 									(0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0), -- 14
-									(0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0));  -- 15
+									(0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0));-- 15
 
 	constant trex_2: sprite_block:=((0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0), -- 0 
-									(0,0,0,0,0,0,0,0,1,0,1,1,1,1,1,0), -- 1 
-									(0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0), -- 2
-									(0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0), -- 3
-									(0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0), -- 4
-									(0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0), -- 5
+									(0,0,0,0,0,0,0,1,1,0,1,1,1,1,1,1), -- 1 
+									(0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1), -- 2
+									(0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1), -- 3
+									(0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0), -- 4
+									(0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0), -- 5
 									(0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0), -- 6
-									(1,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0), -- 7
-									(1,1,0,0,1,1,1,1,1,1,1,0,0,0,0,0), -- 8
+									(1,0,0,0,0,1,1,1,1,1,1,1,1,1,0,0), -- 7
+									(1,1,0,0,1,1,1,1,1,1,1,0,0,1,0,0), -- 8
 									(1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0), -- 9
 									(0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0), -- 10
 									(0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0), -- 11
@@ -90,6 +91,23 @@ architecture Behavioral of top is
 		 							(0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0), -- 13
 									(0,0,0,0,0,1,1,0,1,0,0,0,0,0,0,0), -- 14
 									(0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0));-- 15
+
+	constant trex_dead: sprite_block:=( (0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0), -- 0 
+										(0,0,0,0,0,0,0,1,0,0,0,1,1,1,1,1), -- 1 
+										(0,0,0,0,0,0,0,1,0,1,0,1,1,1,1,1), -- 2
+										(0,0,0,0,0,0,0,1,0,0,0,1,1,1,1,1), -- 3
+										(0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1), -- 4
+										(0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0), -- 5
+										(0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0), -- 6
+										(1,0,0,0,0,1,1,1,1,1,1,1,1,1,0,0), -- 7
+										(1,1,0,0,1,1,1,1,1,1,1,0,0,1,0,0), -- 8
+										(1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0), -- 9
+										(0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0), -- 10
+										(0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0), -- 11
+										(0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0), -- 12
+										(0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0), -- 13
+										(0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0), -- 14
+										(0,0,0,0,0,1,1,0,1,1,0,0,0,0,0,0));-- 15
 
 	constant cactus: sprite_block :=((0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0), -- 0 
 									 (0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0), -- 1 
@@ -209,8 +227,10 @@ begin
 						end if;
 						
 						-- T-Rex
-						if ((hCount / PIX) = trexX) and ((vCount / PIX) = trexY) then 					
-							if (prescalerCount <= prescaler) then
+						if ((hCount / PIX) = trexX) and ((vCount / PIX) = trexY) then
+							if (gameOver = '1') then
+								rgbDrawColor := sprite_color(trex_dead(sprite_y, sprite_x));
+							elsif (prescalerCount <= prescaler) then
 								rgbDrawColor := sprite_color(trex_1(sprite_y, sprite_x));
 							elsif (prescalerCount > prescaler and prescalerCount <= prescaler*2) then
 								rgbDrawColor := sprite_color(trex_2(sprite_y, sprite_x));
@@ -247,18 +267,18 @@ begin
 	
 	
 	controlJump: process(clk, jump)
-		variable prescalerCount: integer := 0;
-		variable prescaler: integer := 2500000;
+		variable trexCount: integer := 0;
+		variable trexTime: integer := 2500000;
 		
 		variable waitCount: integer := 0;
-		variable waitTime: integer := 50000000;
+		variable waitTime: integer := 100000000;
 	begin
 		if clk'event and clk = '1' then
 			if hasMoved = '0' and trexY = 24 then
 				if (jump = '1') then
 					isJumping <= '1';
 					hasMoved <= '1';
-					prescalerCount := 0;
+					trexCount := 0;
 				else
 					hasMoved <= '0';
 				end if;
@@ -267,25 +287,25 @@ begin
 			end if;
 			
 			
-			if prescalerCount >= prescaler then
+			if trexCount >= trexTime then
 				if isJumping = '1' then
 					if (trexY > 20) then
 						trexY <= trexY - 1;
 					else
 						isJumping <= '0';
 					end if;
-					prescalerCount := 0;
+					trexCount := 0;
 				else
 					if (trexY < 24) then
 						trexY <= trexY + 1;
 					end if;
-					prescalerCount := 0;
+					trexCount := 0;
 				end if;
 			end if;
 			
 			
 			-- Detect Hit
-			if (trexY = cactusY) and ((trexX = cactusX_1) or (trexX = cactusX_2) or (trexX = cactusX_2)) then
+			if (trexY = cactusY) and ((trexX = cactusX_1) or (trexX = cactusX_2) or (trexX = cactusX_3)) then
 				gameOver <= '1';
 			end if;
 			
@@ -295,27 +315,29 @@ begin
 					trexY <= 24;
 					
 					gameOver <= '0';
+					--resetCactus <= '1';
 					waitCount := 0;
 				end if;
 				waitCount := waitCount + 1;
 			end if;
 		
-			prescalerCount := prescalerCount + 1;
+			trexCount := trexCount + 1;
 		end if;
 	end process;
 		
 		
 	controlCactus: process(clk, gameOver)
-		variable prescalerCount: integer := 0;
-		variable prescaler: integer := 2500000;
+		variable cactusCount: integer := 0;
+		variable cactusTime: integer := 2500000;
 	begin
 		if gameOver = '1' then
-			cactusX_1 <= COLS - 24*1;
-			cactusX_2 <= COLS - 24*2;
-			cactusX_3 <= COLS - 24*3;
+			cactusX_1 <= COLS + 24*1;
+			cactusX_2 <= COLS + 24*2;
+			cactusX_3 <= COLS + 24*3;
+			--resetCactus <= '0';
 			
 		elsif clk'event and clk = '1' then
-			if prescalerCount >= prescaler then
+			if cactusCount >= cactusTime then
 					if (cactusX_1 <= 0) then
 						cactusX_1 <= COLS;
 					else
@@ -334,10 +356,10 @@ begin
 						cactusX_3 <= cactusX_3 - 1;
 					end if;
 			
-					prescalerCount := 0;
+					cactusCount := 0;
 				end if;
 				
-				prescalerCount := prescalerCount + 1;
+				cactusCount := cactusCount + 1;
 		end if;
 	end process;
 
