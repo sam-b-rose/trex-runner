@@ -48,10 +48,10 @@ architecture Behavioral of top is
 	signal gameOver : std_logic := '0';
 	
 	-- TODO: Randomize these values
-	--signal resetCactus : std_logic := '0';
-	signal cactusX_1: integer := COLS + 24*2;
-	signal cactusX_2: integer := COLS + 24*3;
-	signal cactusX_3: integer := COLS + 24*4;
+	signal resetCactus : std_logic := '0';
+	signal cactusX_1: integer := COLS + (24*2);
+	signal cactusX_2: integer := COLS + (24*3);
+	signal cactusX_3: integer := COLS + (24*4);
 	signal cactusY: integer := 24;
 	
 	signal hasMoved: std_logic := '0';
@@ -267,13 +267,20 @@ begin
 	
 	
 	controlJump: process(clk, jump)
+		variable endGame: std_logic := '0';
+
 		variable trexCount: integer := 0;
 		variable trexTime: integer := 2500000;
+
+		variable cactusCount: integer := 0;
+		variable cactusTime: integer := 2500000;
 		
 		variable waitCount: integer := 0;
 		variable waitTime: integer := 100000000;
 	begin
 		if clk'event and clk = '1' then
+
+			-- Jump Logic
 			if hasMoved = '0' and trexY = 24 then
 				if (jump = '1') then
 					isJumping <= '1';
@@ -287,6 +294,7 @@ begin
 			end if;
 			
 			
+			-- Trex Jump animation
 			if trexCount >= trexTime then
 				if isJumping = '1' then
 					if (trexY > 20) then
@@ -302,65 +310,58 @@ begin
 					trexCount := 0;
 				end if;
 			end if;
+			trexCount := trexCount + 1;
 			
 			
 			-- Detect Hit
 			if (trexY = cactusY) and ((trexX = cactusX_1) or (trexX = cactusX_2) or (trexX = cactusX_3)) then
-				gameOver <= '1';
+				endGame := '1';
 			end if;
 			
-			if gameOver = '1' then
+
+			-- Game Over
+			if endGame = '1' then
 				if waitCount >= waitTime then
 					trexX <= 8;
 					trexY <= 24;
 					
-					gameOver <= '0';
-					--resetCactus <= '1';
+					endGame := '0';
 					waitCount := 0;
+					resetCactus <= '1';
 				end if;
 				waitCount := waitCount + 1;
 			end if;
-		
-			trexCount := trexCount + 1;
-		end if;
-	end process;
-		
-		
-	controlCactus: process(clk, gameOver)
-		variable cactusCount: integer := 0;
-		variable cactusTime: integer := 2500000;
-	begin
-		if gameOver = '1' then
-			cactusX_1 <= COLS + 24*1;
-			cactusX_2 <= COLS + 24*2;
-			cactusX_3 <= COLS + 24*3;
-			--resetCactus <= '0';
-			
-		elsif clk'event and clk = '1' then
-			if cactusCount >= cactusTime then
-					if (cactusX_1 <= 0) then
-						cactusX_1 <= COLS;
-					else
-						cactusX_1 <= cactusX_1 - 1;
-					end if;
-					
-					if (cactusX_2 <= 0) then
-						cactusX_2 <= COLS;
-					else
-						cactusX_2 <= cactusX_2 - 1;
-					end if;
-					
-					if (cactusX_3 <= 0) then
-						cactusX_3 <= COLS;
-					else
-						cactusX_3 <= cactusX_3 - 1;
-					end if;
-			
-					cactusCount := 0;
+
+			if resetCactus = '1' then
+				cactusX_1 <= COLS + (24*1);
+				cactusX_2 <= COLS + (24*2);
+				cactusX_3 <= COLS + (24*3);
+				resetCactus <= '0';
+			elsif (endGame = '0') and (cactusCount >= cactusTime) then
+				if (cactusX_1 <= 0) then
+					cactusX_1 <= COLS;
+				else
+					cactusX_1 <= cactusX_1 - 1;
 				end if;
 				
-				cactusCount := cactusCount + 1;
-		end if;
+				if (cactusX_2 <= 0) then
+					cactusX_2 <= COLS;
+				else
+					cactusX_2 <= cactusX_2 - 1;
+				end if;
+				
+				if (cactusX_3 <= 0) then
+					cactusX_3 <= COLS;
+				else
+					cactusX_3 <= cactusX_3 - 1;
+				end if;
+		
+				cactusCount := 0;
+			end if;
+			cactusCount := cactusCount + 1;
+
+		end if; -- end clock event
+		gameOver <= endGame;
 	end process;
 
 end Behavioral;
