@@ -15,10 +15,14 @@ entity Counter is
 end Counter;
  
 architecture Behavioral of Counter is
-   signal t0: integer := 0;
+    signal t0: integer := 0;
 	signal t10: integer := 0;
 	signal t100: integer := 0;
 	signal t1000: integer := 0;
+	signal h0: integer := 0;
+	signal h10: integer := 0;
+	signal h100: integer := 0;
+	signal h1000: integer := 0;
 begin   
   process(clk)
 		variable prescalerCount: integer := 0;
@@ -53,6 +57,7 @@ begin
 							end if;
 						end if;
 					end if;
+
 					prescalerCount := 0;
 				end if;
 				prescalerCount := prescalerCount + 1;
