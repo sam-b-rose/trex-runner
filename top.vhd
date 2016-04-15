@@ -68,7 +68,13 @@ architecture Behavioral of top is
 	signal isJumping : std_logic := '0';
 	signal hasMoved: std_logic := '0';
 	signal addPtero: std_logic := '0';
+
+	-- Speed
 	signal speedAdj: integer := 0;
+	signal cloudSpeed : integer := 60;
+	signal cactusSpeed : integer := 40;
+	signal pteroSpeed : integer := 30;
+	signal trexSpeed : integer := 25;
 
 	-- COMPONENT SIGNALS
 	signal sclock : std_logic;
@@ -186,18 +192,18 @@ architecture Behavioral of top is
 									 (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0), -- 4
 									 (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0), -- 5
 									 (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0), -- 6
-									 (0,0,0,0,0,0,2,2,2,2,2,0,0,0,0,0), -- 7
-									 (0,0,0,0,0,2,2,0,0,0,2,2,2,2,0,0), -- 8
-									 (0,2,2,2,2,2,0,0,0,0,0,0,0,2,2,2), -- 9
-									 (2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2), -- 10
-									 (2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2), -- 11
+									 (0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0), -- 7
+									 (0,0,0,0,0,1,1,0,0,0,1,1,1,1,0,0), -- 8
+									 (0,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1), -- 9
+									 (1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1), -- 10
+									 (1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1), -- 11
 									 (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0), -- 12
 		 							 (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0), -- 13
 									 (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0), -- 14
 									 (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0));-- 15
 
 	type color_arr is array(0 to 2) of std_logic_vector(7 downto 0);
-	constant sprite_color : color_arr := ("11011111", "00000000", "00100101");
+	constant sprite_color : color_arr := ("11011111", "00000000", "00010111");
 
 	-- COMPONENTS
 	-- Clock Divider
@@ -441,30 +447,35 @@ begin
 			end if;
 		end if;
 	end process;
-	
-	
+
+	speedAdj <= 0;
+	cloudSpeed <= (60 - speedAdj);
+	cactusSpeed <= (40 - speedAdj);
+	pteroSpeed <= (30 - speedAdj);
+	trexSpeed <= 25;
+
 	gameLogic: process(clk, jump)
 		variable endGame: std_logic := '0';
 
 		variable trexCount: integer := 0;
-		--variable trexTime: integer := T_FAC*(25 - speedAdj);
-		variable trexTime: integer := T_FAC*(25);
+		variable trexTime: integer := T_FAC * trexSpeed;
+		--variable trexTime: integer := T_FAC*(15);
 
 		variable cactusCount: integer := 0;
-		--variable cactusTime: integer := T_FAC*(25 - speedAdj);
-		variable cactusTime: integer := T_FAC*(30);
+		variable cactusTime: integer := T_FAC * cactusSpeed;
+		--variable cactusTime: integer := T_FAC*(40);
 
 		variable pteroCount: integer := 0;
-		--variable pteroTime: integer := T_FAC*(20 - speedAdj);
-		variable pteroTime: integer := T_FAC*(30);
+		variable pteroTime: integer := T_FAC * pteroSpeed;
+		--variable pteroTime: integer := T_FAC*(30);
 
 		variable cloudCount: integer := 0;
-		--variable cloudTime: integer := T_FAC*(30 - speedAdj);
-		variable cloudTime: integer := T_FAC*(45);
+		variable cloudTime: integer := T_FAC * cloudSpeed;
+		--variable cloudTime: integer := T_FAC*(60);
 		
 		variable waitCount: integer := 0;
-		--variable waitTime: integer := T_FAC*40*(25 - speedAdj);
-		variable waitTime: integer := T_FAC*40*(25);
+		variable waitTime: integer := T_FAC*40*25;
+		--variable waitTime: integer := T_FAC*40*(25);
 
 	begin
 		if clk'event and clk = '1' then
@@ -519,6 +530,7 @@ begin
 					trexX <= 8;
 					trexY <= 24;
 					endGame := '0';
+					addPtero <= '0';
 					waitCount := 0;
 					resetGame <= '1';
 				end if;
@@ -535,7 +547,6 @@ begin
 				cloudX_3 <= COLS + COLS;
 				pteroX_1 <= COLS + COLS;
 				resetGame <= '0';
-				speedAdj <= 0;
 			else
 
 				-- Cactus Movement
@@ -599,10 +610,6 @@ begin
 				end if;
 				cloudCount := cloudCount + 1;
 			end if;
-
---			if d10 = 5 then
---				speedAdj <= speedAdj + 1;
---			end if;
 
 		end if; -- end clock event
 		gameOver <= endGame;

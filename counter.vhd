@@ -5,13 +5,13 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 use ieee.numeric_std.all;
 
 entity Counter is
-   port(  clk : in std_logic;
-          countup: in std_logic;
-          reset: in std_logic;
-          d0: out std_logic_vector(3 downto 0);
-			 d10: out std_logic_vector(3 downto 0);
-			 d100: out std_logic_vector(3 downto 0);
-			 d1000: out std_logic_vector(3 downto 0));
+   port(clk : in std_logic;
+        countup: in std_logic;
+        reset: in std_logic;
+        d0: out std_logic_vector(3 downto 0);
+		d10: out std_logic_vector(3 downto 0);
+		d100: out std_logic_vector(3 downto 0);
+		d1000: out std_logic_vector(3 downto 0));
 end Counter;
  
 architecture Behavioral of Counter is
