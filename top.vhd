@@ -30,8 +30,13 @@ architecture Behavioral of top is
 	constant PIX : integer := 16;
 	constant ROWS : integer := 30;
 	constant COLS : integer := 40;
-	--constant T_FAC : integer := 2500000;
 	constant T_FAC : integer := 100000;
+
+	-- Speed
+	constant cloudSpeed : integer := 60;
+	constant cactusSpeed : integer := 40;
+	constant pteroSpeed : integer := 30;
+	constant trexSpeed : integer := 25;
 
 	-- VGA Sigs
 	signal hCount: integer := 640;
@@ -69,20 +74,13 @@ architecture Behavioral of top is
 	signal hasMoved: std_logic := '0';
 	signal addPtero: std_logic := '0';
 
-	-- Speed
-	signal speedAdj: integer := 0;
-	signal cloudSpeed : integer := 60;
-	signal cactusSpeed : integer := 40;
-	signal pteroSpeed : integer := 30;
-	signal trexSpeed : integer := 25;
-
 	-- COMPONENT SIGNALS
 	signal sclock : std_logic;
 	signal d0, d10, d100, d1000 : std_logic_vector (3 downto 0);
 	signal disp1, disp2, disp3, disp4 : std_logic_vector (6 downto 0);
 
 	-- Sprites
-	type sprite_block is array(0 to 15, 0 to 15) of integer range 0 to 2;
+	type sprite_block is array(0 to 15, 0 to 15) of integer range 0 to 1;
 	constant trex_1: sprite_block:=((0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0), -- 0 
 									(0,0,0,0,0,0,0,1,1,0,1,1,1,1,1,1), -- 1 
 									(0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1), -- 2
@@ -202,8 +200,8 @@ architecture Behavioral of top is
 									 (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0), -- 14
 									 (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0));-- 15
 
-	type color_arr is array(0 to 2) of std_logic_vector(7 downto 0);
-	constant sprite_color : color_arr := ("11011111", "00000000", "00010111");
+	type color_arr is array(0 to 1) of std_logic_vector(7 downto 0);
+	constant sprite_color : color_arr := ("11011111", "00000000");
 
 	-- COMPONENTS
 	-- Clock Divider
@@ -448,37 +446,27 @@ begin
 		end if;
 	end process;
 
-	speedAdj <= 0;
-	cloudSpeed <= (60 - speedAdj);
-	cactusSpeed <= (40 - speedAdj);
-	pteroSpeed <= (30 - speedAdj);
-	trexSpeed <= 25;
-
 	gameLogic: process(clk, jump)
 		variable endGame: std_logic := '0';
 
 		variable trexCount: integer := 0;
 		variable trexTime: integer := T_FAC * trexSpeed;
-		--variable trexTime: integer := T_FAC*(15);
 
 		variable cactusCount: integer := 0;
 		variable cactusTime: integer := T_FAC * cactusSpeed;
-		--variable cactusTime: integer := T_FAC*(40);
 
 		variable pteroCount: integer := 0;
 		variable pteroTime: integer := T_FAC * pteroSpeed;
-		--variable pteroTime: integer := T_FAC*(30);
 
 		variable cloudCount: integer := 0;
 		variable cloudTime: integer := T_FAC * cloudSpeed;
-		--variable cloudTime: integer := T_FAC*(60);
 		
 		variable waitCount: integer := 0;
 		variable waitTime: integer := T_FAC*40*25;
-		--variable waitTime: integer := T_FAC*40*(25);
 
 	begin
 		if clk'event and clk = '1' then
+
 			-- Jump Logic
 			if hasMoved = '0' and trexY = 24 then
 				if (jump = '1') and (gameOver = '0') then
@@ -513,13 +501,18 @@ begin
 			
 			
 			-- Show pterodactyls after score of 50
-			if d10 >= 5 and addPtero = '0' then
+			if d10 >= "0101" and addPtero = '0' then
 				addPtero <= '1';
 			end if;
 
 
-			-- Detect Hit
+			-- Detect Hit Cactus
 			if (trexY = cactusY) and ((trexX = cactusX_1) or (trexX = cactusX_2) or (trexX = cactusX_3)) then
+				endGame := '1';
+			end if;
+
+			-- Detect Hit Pterodactyl
+			if (trexY = pteroY_1) and (trexX = pteroX_1) then
 				endGame := '1';
 			end if;
 			
@@ -552,19 +545,19 @@ begin
 				-- Cactus Movement
 				if (endGame = '0') and (cactusCount >= cactusTime) then
 					if (cactusX_1 <= 0) then
-						cactusX_1 <= COLS + (COLS/2);
+						cactusX_1 <= COLS + to_integer(unsigned(d0));
 					else
 						cactusX_1 <= cactusX_1 - 1;
 					end if;
 					
 					if (cactusX_2 <= 0) then
-						cactusX_2 <= COLS + (COLS/2);
+						cactusX_2 <= COLS + to_integer(unsigned(d0)) + to_integer(unsigned(d10));
 					else
 						cactusX_2 <= cactusX_2 - 1;
 					end if;
 					
 					if (cactusX_3 <= 0) then
-						cactusX_3 <= COLS + (COLS/2);
+						cactusX_3 <= COLS + 5 + to_integer(unsigned(d0));
 					else
 						cactusX_3 <= cactusX_3 - 1;
 					end if;
@@ -588,21 +581,21 @@ begin
 				-- Cloud Movement
 				if (endGame = '0') and (cloudCount >= cloudTime) then
 					if cloudX_1 <= 0 then
-						cloudX_1 <= COLS + (COLS/2);
+						cloudX_1 <= COLS + to_integer(unsigned(d0));
 					else
 						cloudX_1 <= cloudX_1 - 1;
 					end if;
 					cloudCount := 0;
 
 					if cloudX_2 <= 0 then
-						cloudX_2 <= COLS + (COLS/2);
+						cloudX_2 <= COLS + to_integer(unsigned(d0)) + to_integer(unsigned(d10));
 					else
 						cloudX_2 <= cloudX_2 - 1;
 					end if;
 					cloudCount := 0;
 
 					if cloudX_3 <= 0 then
-						cloudX_3 <= COLS + (COLS/2);
+						cloudX_3 <= COLS + 5 + to_integer(unsigned(d10));
 					else
 						cloudX_3 <= cloudX_3 - 1;
 					end if;
