@@ -1,0 +1,52 @@
+NET "hsync" LOC = J14;
+NET "hsync" DRIVE = 2;
+NET "hsync" PULLUP;
+NET "vsync" LOC = K13;
+NET "vsync" DRIVE = 2;
+NET "vsync" PULLUP;
+
+NET "Red[2]" LOC = F13;
+NET "Red[2]" DRIVE = 2;
+NET "Red[2]" PULLUP;
+NET "Red[1]" LOC = D13;
+NET "Red[1]" DRIVE = 2;
+NET "Red[1]" PULLUP;
+NET "Red[0]" LOC = C14;
+NET "Red[0]" DRIVE = 2;
+NET "Red[0]" PULLUP;
+
+NET "Green[2]" LOC = G14;
+NET "Green[2]" DRIVE = 2;
+NET "Green[2]" PULLUP;
+NET "Green[1]" LOC = G13;
+NET "Green[1]" DRIVE = 2;
+NET "Green[1]" PULLUP;
+NET "Green[0]" LOC = F14;
+NET "Green[0]" DRIVE = 2;
+NET "Green[0]" PULLUP;
+
+NET "Blue[2]" LOC = J13;
+NET "Blue[2]" DRIVE = 2;
+NET "Blue[2]" PULLUP;
+NET "Blue[1]" LOC = H13;
+NET "Blue[1]" DRIVE = 2;
+NET "Blue[1]" PULLUP;
+
+NET "clk" LOC = B8;
+NET "reset" LOC = P11;
+
+NET "jump" LOC = G12;
+
+NET "anodes[2]" LOC = J12;
+NET "anodes[3]" LOC = F12;
+NET "anodes[1]" LOC = M13;
+NET "anodes[0]" LOC = K14;
+
+NET "segments[7]" LOC = L14;
+NET "segments[6]" LOC = H12;
+NET "segments[5]" LOC = N14;
+NET "segments[4]" LOC = N11;
+NET "segments[3]" LOC = P12;
+NET "segments[2]" LOC = L13;
+NET "segments[1]" LOC = M12;
+NET "segments[0]" LOC = N13;
