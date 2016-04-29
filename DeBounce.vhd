@@ -3,14 +3,14 @@ LIBRARY ieee;
 USE ieee.STD_LOGIC_1164.all;
 USE ieee.STD_LOGIC_UNSIGNED.all;
 
-ENTITY DEBO IS
+ENTITY Debo IS
 PORT (
   clk: IN STD_LOGIC; ---make it a low frequency Clock input
   key: IN STD_LOGIC;  -- active low input
   pulse: OUT STD_LOGIC);
-END DEBO;
+END Debo;
 
-ARCHITECTURE onepulse OF DEBO IS
+ARCHITECTURE onepulse OF Debo IS
   SIGNAL cnt: STD_LOGIC_VECTOR (1 DOWNTO 0);
 BEGIN
   PROCESS (clk,key)
